@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "160009524746",
+    "project_id": "fir-test-e561a",
+    "storage_bucket": "fir-test-e561a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160009524746:android:cc76ad8d1212c08d80b1f3",
+        "android_client_info": {
+          "package_name": "com.example.flowmuse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBF-5gkcXt4hiLfvqjPWbA45gieUgctWA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160009524746:android:1518cc1b3a64a4bf80b1f3",
+        "android_client_info": {
+          "package_name": "com.example.test"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBF-5gkcXt4hiLfvqjPWbA45gieUgctWA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
