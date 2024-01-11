@@ -4,12 +4,21 @@ import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../constants/colors.dart';
+import 'package:intl/intl.dart';
+
 
 class Task {
   String title;
+  String description;
+  DateTime dueDate;
   String status;
 
-  Task({required this.title, required this.status});
+  Task({
+    required this.title,
+    required this.description,
+    required this.dueDate,
+    required this.status,
+  });
 }
 
 class TaskProvider extends ChangeNotifier {
@@ -157,7 +166,7 @@ class KanbanBoard extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appBackBlue,
-        title: const Text('Flow Muse'),
+        title: const Text('Project'),
         centerTitle: true,
       ),
       body: Container(
@@ -202,56 +211,87 @@ class KanbanColumn extends StatelessWidget {
       default:
     }
 
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: appBackBlue,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              _showAddTaskDialog(context, taskProvider);
-            },
-            child: Text('Add Task'),
-          ),
-          Text(status, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          Expanded(
-            child: ListView.builder(
-              itemCount: taskProvider.tasks.length,
-              itemBuilder: (context, index) {
-                var task = taskProvider.tasks[index];
-                if (task.status == status) {
-                  return TaskCard(
-                    task: task,
-                    onDelete: () {
-                      taskProvider.tasks.removeAt(index);
-                      taskProvider.notifyListeners();
-                    },
-                  );
-                } else {
-                  return Container();
-                }
-              },
+     return Card(
+      child: Container(
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: appBackBlue,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  status,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-          ),
-        ],
+            ElevatedButton(
+              onPressed: () {
+                _showAddTaskDialog(context, taskProvider);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                minimumSize: Size(345, 25),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text('+'),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: taskProvider.tasks.length,
+                itemBuilder: (context, index) {
+                  var task = taskProvider.tasks[index];
+                  if (task.status == status) {
+                    return TaskCard(
+                      task: task,
+                      onDelete: () {
+                        taskProvider.tasks.removeAt(index);
+                        taskProvider.notifyListeners();
+                      },
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   void _showAddTaskDialog(BuildContext context, TaskProvider taskProvider) {
-    TextEditingController taskController = TextEditingController();
+    TextEditingController titleController = TextEditingController();
+    TextEditingController descriptionController = TextEditingController();
+    TextEditingController dueDateController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Add Task'),
-          content: TextField(
-            controller: taskController,
-            decoration: InputDecoration(labelText: 'Task Title'),
+          content: Column(
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(labelText: 'Task Title'),
+              ),
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
+              TextField(
+                controller: dueDateController,
+                decoration: InputDecoration(labelText: 'Due Date (mm/dd/yy)'),
+              ),
+            ],
           ),
           actions: [
             TextButton(
@@ -262,8 +302,16 @@ class KanbanColumn extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                if (taskController.text.isNotEmpty) {
-                  taskProvider.addTask(Task(title: taskController.text, status: status));
+                if (titleController.text.isNotEmpty &&
+                    dueDateController.text.isNotEmpty) {
+                  taskProvider.addTask(
+                    Task(
+                      title: titleController.text,
+                      description: descriptionController.text,
+                      dueDate: DateFormat('MM/dd/yy').parse(dueDateController.text),
+                      status: status,
+                    ),
+                  );
                   Navigator.pop(context);
                 }
               },
@@ -275,7 +323,6 @@ class KanbanColumn extends StatelessWidget {
     );
   }
 }
-
 
 class TaskCard extends StatelessWidget {
   final Task task;
@@ -289,7 +336,20 @@ class TaskCard extends StatelessWidget {
       margin: EdgeInsets.all(8),
       color: Colors.white,
       child: ListTile(
-        title: Text(task.title),
+        title: Text(
+          task.title,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(task.description),
+            Text(
+              'Due Date: ${DateFormat('MM/dd/yy').format(task.dueDate)}',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
         trailing: IconButton(
           icon: Icon(Icons.delete),
           onPressed: onDelete,
