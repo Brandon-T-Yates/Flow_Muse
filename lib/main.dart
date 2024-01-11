@@ -104,14 +104,13 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: appBackBlue,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: null, // Remove the title from the app bar
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             const SizedBox(height: 30),
-            Text(
+            const Text(
               'Flow Muse',
               style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold,),
             ),
@@ -162,7 +161,7 @@ class KanbanBoard extends StatelessWidget {
         centerTitle: true,
       ),
       body: Container(
-        color: appBackBlue, // Set your desired background color here
+        color: appBackBlue,
         child: KanbanColumns(),
       ),
     );
@@ -193,29 +192,52 @@ class KanbanColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     var taskProvider = Provider.of<TaskProvider>(context);
 
-    return Column(
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            _showAddTaskDialog(context, taskProvider);
-          },
-          child: Text('Add Task'),
-        ),
-        Text(status, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        Expanded(
-          child: ListView.builder(
-            itemCount: taskProvider.tasks.length,
-            itemBuilder: (context, index) {
-              var task = taskProvider.tasks[index];
-              if (task.status == status) {
-                return ListTile(title: Text(task.title));
-              } else {
-                return Container();
-              }
+    switch (status) {
+      case 'ToDo':
+        break;
+      case 'Doing':
+        break;
+      case 'Done':
+        break;
+      default:
+    }
+
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: appBackBlue,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              _showAddTaskDialog(context, taskProvider);
             },
+            child: Text('Add Task'),
           ),
-        ),
-      ],
+          Text(status, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Expanded(
+            child: ListView.builder(
+              itemCount: taskProvider.tasks.length,
+              itemBuilder: (context, index) {
+                var task = taskProvider.tasks[index];
+                if (task.status == status) {
+                  return TaskCard(
+                    task: task,
+                    onDelete: () {
+                      taskProvider.tasks.removeAt(index);
+                      taskProvider.notifyListeners();
+                    },
+                  );
+                } else {
+                  return Container();
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -250,6 +272,29 @@ class KanbanColumn extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+
+class TaskCard extends StatelessWidget {
+  final Task task;
+  final VoidCallback onDelete;
+
+  TaskCard({required this.task, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.all(8),
+      color: Colors.white,
+      child: ListTile(
+        title: Text(task.title),
+        trailing: IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: onDelete,
+        ),
+      ),
     );
   }
 }
