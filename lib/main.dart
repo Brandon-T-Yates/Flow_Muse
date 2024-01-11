@@ -28,6 +28,20 @@ class TaskProvider extends ChangeNotifier {
     tasks.add(task);
     notifyListeners();
   }
+
+  void removeTask(Task task) {
+    tasks.remove(task);
+    notifyListeners();
+  }
+
+  void reorderTasks(int oldIndex, int newIndex, String status) {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final task = tasks.removeAt(oldIndex);
+    tasks.insert(newIndex, task);
+    notifyListeners();
+  }
 }
 
 void main() async {
@@ -162,12 +176,35 @@ class KanbanBoard extends StatelessWidget {
   const KanbanBoard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+ Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appBackBlue,
         title: const Text('Project'),
         centerTitle: true,
+        automaticallyImplyLeading: false, // Disables the back button
+        actions: [
+          PopupMenuButton(
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem(
+                  child: Text('Profile'),
+                  // Add functionality or route navigation for the Settings option
+                  onTap: () {
+                    // Add your code to handle the Settings option
+                  },
+                ),
+                PopupMenuItem(
+                  child: Text('Logout'),
+                  // Go to the previous screen when Logout is selected
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ];
+            },
+          ),
+        ],
       ),
       body: Container(
         color: appBackBlue,
@@ -176,7 +213,6 @@ class KanbanBoard extends StatelessWidget {
     );
   }
 }
-
 class KanbanColumns extends StatelessWidget {
   const KanbanColumns({super.key});
 
@@ -201,17 +237,7 @@ class KanbanColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     var taskProvider = Provider.of<TaskProvider>(context);
 
-    switch (status) {
-      case 'ToDo':
-        break;
-      case 'Doing':
-        break;
-      case 'Done':
-        break;
-      default:
-    }
-
-     return Card(
+    return Card(
       child: Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -242,22 +268,42 @@ class KanbanColumn extends StatelessWidget {
               ),
               child: Text('+'),
             ),
+
+            // Draggable Column
             Expanded(
-              child: ListView.builder(
-                itemCount: taskProvider.tasks.length,
-                itemBuilder: (context, index) {
-                  var task = taskProvider.tasks[index];
-                  if (task.status == status) {
-                    return TaskCard(
-                      task: task,
-                      onDelete: () {
-                        taskProvider.tasks.removeAt(index);
-                        taskProvider.notifyListeners();
-                      },
-                    );
-                  } else {
-                    return Container();
-                  }
+              child: DragTarget<Task>(
+                onWillAccept: (task) => task != null && task.status != status,
+                onAccept: (task) {
+                  taskProvider.tasks.remove(task);
+                  task.status = status;
+                  taskProvider.addTask(task);
+                  taskProvider.notifyListeners();
+                },
+                builder: (context, candidateData, rejectedData) {
+                  return ListView.builder(
+                    itemCount: taskProvider.tasks.length,
+                    itemBuilder: (context, index) {
+                      var task = taskProvider.tasks[index];
+                      if (task.status == status) {
+                        return LongPressDraggable<Task>(
+                          data: task,
+                          child: TaskCard(
+                            task: task,
+                            onDelete: () {
+                              taskProvider.tasks.removeAt(index);
+                              taskProvider.notifyListeners();
+                            },
+                          ),
+                          feedback: TaskCard(task: task, onDelete: () {}),
+                          onDragEnd: (details) {
+                            // Handle drag end if needed
+                          },
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  );
                 },
               ),
             ),
