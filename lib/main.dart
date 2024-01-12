@@ -72,6 +72,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: MyHomePage(title: 'Flow Muse Sign In'),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }
@@ -176,19 +177,19 @@ class KanbanBoard extends StatelessWidget {
   const KanbanBoard({super.key});
 
   @override
- Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appBackBlue,
         title: const Text('Project'),
         centerTitle: true,
-        automaticallyImplyLeading: false, // Disables the back button
+        automaticallyImplyLeading: false,
         actions: [
           PopupMenuButton(
             itemBuilder: (BuildContext context) {
               return [
                 PopupMenuItem(
-                  child: Text('Profile'),
+                  child: Text('Profile  '),
                   // Add functionality or route navigation for the Settings option
                   onTap: () {
                     // Add your code to handle the Settings option
