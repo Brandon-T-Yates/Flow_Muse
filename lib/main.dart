@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../constants/colors.dart';
 import 'package:intl/intl.dart';
+import 'screens/profilepage.dart';
 
 
 class Task {
@@ -189,10 +190,13 @@ class KanbanBoard extends StatelessWidget {
             itemBuilder: (BuildContext context) {
               return [
                 PopupMenuItem(
-                  child: Text('Profile  '),
+                  child: Text('Profile'),
                   // Add functionality or route navigation for the Settings option
                   onTap: () {
-                    // Add your code to handle the Settings option
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfilePage()),
+                    );
                   },
                 ),
                 PopupMenuItem(
