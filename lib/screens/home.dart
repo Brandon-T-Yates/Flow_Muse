@@ -34,7 +34,6 @@ class _HomeState extends State<Home> {
               vertical: 15),
             child: Column(
               children: [
-                searcBox(),
                 Expanded(
                   child: ListView(
                     children: [
@@ -84,7 +83,6 @@ class _HomeState extends State<Home> {
                   child: TextField(
                     controller: _todoController,
                     decoration: const InputDecoration(
-                      hintText: 'Add new todo here',
                       border: InputBorder.none
                     ),)
                 )
@@ -136,52 +134,6 @@ class _HomeState extends State<Home> {
     _todoController.clear();
   }
 
-  void _runFilter(String enteredKeyWord){
-    List<ToDo> results = [];
-    if( enteredKeyWord.isEmpty){
-      results = todoList;
-    } 
-    else {
-      results = todoList.where(
-        (item) => item.todoText!.
-        toLowerCase().contains(
-          enteredKeyWord.toLowerCase()))
-          .toList();
-    }
-    setState(() {
-      _foundToDo = results;
-    });
-  }
-
-  Widget searcBox() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-       ),
-       child: TextField(
-        onChanged: (value) => _runFilter(value),
-         decoration: const InputDecoration(
-           contentPadding: EdgeInsets.all(0),
-           prefixIcon: Icon(
-             Icons.search,
-             color: black,
-            size: 20,
-          ),
-          prefixIconConstraints: BoxConstraints(
-            maxHeight: 20,
-            minWidth: 25,
-           ),
-          border: InputBorder.none,
-          hintText: 'Search',
-           hintStyle: TextStyle(
-             color: grey,
-          ),
-         ),
-       ),
-    );
-  }
 
   AppBar _buldAppBar() {
     return AppBar(  
