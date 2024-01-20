@@ -6,21 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../constants/colors.dart';
 import 'package:intl/intl.dart';
 import 'screens/profilepage.dart';
-
-
-class Task {
-  String title;
-  String description;
-  DateTime dueDate;
-  String status;
-
-  Task({
-    required this.title,
-    required this.description,
-    required this.dueDate,
-    required this.status,
-  });
-}
+import 'task_model.dart';
 
 class TaskProvider extends ChangeNotifier {
   List<Task> tasks = [];
@@ -72,7 +58,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: MyHomePage(title: 'Flow Muse Sign In'),
+        home: const MyHomePage(title: 'Flow Muse Sign In'),
         debugShowCheckedModeBanner: false,
       ),
     );
@@ -262,7 +248,7 @@ class KanbanColumn extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                _showAddTaskDialog(context, taskProvider);
+                _showAddTaskDialog(context, taskProvider, status);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
@@ -273,7 +259,7 @@ class KanbanColumn extends StatelessWidget {
               ),
               child: Text('+'),
             ),
-
+        
             // Draggable Column
             Expanded(
               child: DragTarget<Task>(
@@ -318,7 +304,7 @@ class KanbanColumn extends StatelessWidget {
     );
   }
 
-  void _showAddTaskDialog(BuildContext context, TaskProvider taskProvider) {
+  void _showAddTaskDialog(BuildContext context, TaskProvider taskProvider, String status) {
     TextEditingController titleController = TextEditingController();
     TextEditingController descriptionController = TextEditingController();
     TextEditingController dueDateController = TextEditingController();
@@ -352,20 +338,35 @@ class KanbanColumn extends StatelessWidget {
               child: Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                if (titleController.text.isNotEmpty &&
-                    dueDateController.text.isNotEmpty) {
-                  taskProvider.addTask(
-                    Task(
-                      title: titleController.text,
-                      description: descriptionController.text,
-                      dueDate: DateFormat('MM/dd/yy').parse(dueDateController.text),
-                      status: status,
-                    ),
-                  );
-                  Navigator.pop(context);
-                }
-              },
+            onPressed: () async {
+              if (titleController.text.isNotEmpty && dueDateController.text.isNotEmpty) {
+                // Convert due date string to DateTime
+                DateTime dueDate = DateFormat('MM/dd/yy').parse(dueDateController.text);
+
+                // Create a Task object
+                Task newTask = Task(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  title: titleController.text,
+                  description: descriptionController.text,
+                  dueDate: dueDate,
+                  status: status,
+                );
+
+                // Store the task in Firebase Firestore
+                await FirebaseFirestore.instance.collection('tasks').add({
+                  'title': newTask.title,
+                  'description': newTask.description,
+                  'dueDate': newTask.dueDate,
+                  'status': newTask.status,
+                });
+
+                // Add the task to the local taskProvider
+                taskProvider.addTask(newTask);
+
+                // Close the dialog
+                Navigator.pop(context);
+              }
+            },
               child: Text('Add'),
             ),
           ],
