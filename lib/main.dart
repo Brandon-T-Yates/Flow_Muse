@@ -353,12 +353,16 @@ class KanbanColumn extends StatelessWidget {
                 );
 
                 // Store the task in Firebase Firestore
-                await FirebaseFirestore.instance.collection('tasks').add({
-                  'title': newTask.title,
-                  'description': newTask.description,
-                  'dueDate': newTask.dueDate,
-                  'status': newTask.status,
-                });
+                DocumentReference docRef = await FirebaseFirestore.instance.collection('tasks').add({
+                    'title': newTask.title,
+                    'description': newTask.description,
+                    'dueDate': newTask.dueDate,
+                    'status': newTask.status,
+                  },
+                );
+
+                 // Updates the task's ID
+                newTask.id = docRef.id;
 
                 // Add the task to the local taskProvider
                 taskProvider.addTask(newTask);
@@ -404,7 +408,13 @@ class TaskCard extends StatelessWidget {
         ),
         trailing: IconButton(
           icon: Icon(Icons.delete),
-          onPressed: onDelete,
+          onPressed: () async {
+            // Delete task from Firebase Firestore
+            await FirebaseFirestore.instance.collection('tasks').doc(task.id).delete();
+
+            // Call the onDelete callback to remove the task locally
+            onDelete();
+          },
         ),
       ),
     );
