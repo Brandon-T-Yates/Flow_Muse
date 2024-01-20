@@ -29,6 +29,33 @@ class TaskProvider extends ChangeNotifier {
     tasks.insert(newIndex, task);
     notifyListeners();
   }
+  Future<void> fetchTasks() async {
+    try {
+      // Clear existing tasks
+      tasks.clear();
+
+      // Fetch tasks from Firestore
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('tasks').get();
+
+      // Process the retrieved tasks
+      querySnapshot.docs.forEach((doc) {
+        Task task = Task(
+          id: doc.id,
+          title: doc['title'],
+          description: doc['description'],
+          dueDate: doc['dueDate'].toDate(), // Convert Firestore Timestamp to DateTime
+          status: doc['status'],
+        );
+
+        tasks.add(task);
+      });
+
+      // Notify listeners about the changes
+      notifyListeners();
+    } catch (e) {
+      print('Error fetching tasks: $e');
+    }
+  }
 }
 
 void main() async {
@@ -165,6 +192,7 @@ class KanbanBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<TaskProvider>(context, listen: false).fetchTasks();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appBackBlue,
