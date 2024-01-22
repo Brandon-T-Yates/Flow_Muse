@@ -422,14 +422,9 @@ class KanbanColumn extends StatelessWidget {
                     'status': newTask.status,
                   },
                 );
-
                  // Updates the task's ID
                 newTask.id = docRef.id;
-
-                // Add the task to the local taskProvider
                 taskProvider.addTask(newTask);
-
-                // Close the dialog
                 Navigator.pop(context);
               }
             },
