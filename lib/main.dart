@@ -3,10 +3,13 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../constants/colors.dart';
 import 'package:intl/intl.dart';
 import 'screens/profilepage.dart';
 import 'task_model.dart';
+import 'screens/sign_up.dart';
+
 
 class TaskProvider extends ChangeNotifier {
   List<Task> tasks = [];
@@ -102,6 +105,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   late TextEditingController _nameController;
   late TextEditingController _passwordController;
 
@@ -112,27 +116,49 @@ class _MyHomePageState extends State<MyHomePage> {
     _passwordController = TextEditingController();
   }
 
-  void _submitForm() async {
+  Future<void> _submitForm() async {
     final String name = _nameController.text;
     final String password = _passwordController.text;
 
     if (name.isNotEmpty && password.isNotEmpty) {
-      // Store name and password in Firebase Firestore
-      await FirebaseFirestore.instance.collection('users').add({
-        'name': name,
-        'password': password,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      try {
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: name,
+          password: password,
+        );
 
-      // Clear text fields after submission
-      _nameController.clear();
-      _passwordController.clear();
+        // Successfully signed in
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => KanbanBoard()),
+        );
+      } catch (e) {
+        // Handle sign-in errors (e.g., user not found, wrong password)
+        print('Error signing in: $e');
+      }
+    }
+  }
 
-      // Navigate to the Kanban board
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => KanbanBoard()),
-      );
+  Future<void> _createAccount() async {
+    final String name = _nameController.text;
+    final String password = _passwordController.text;
+
+    if (name.isNotEmpty && password.isNotEmpty) {
+      try {
+        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+          email: name,
+          password: password,
+        );
+
+        // Successfully created account
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => KanbanBoard()),
+        );
+      } catch (e) {
+        // Handle account creation errors (e.g., email already exists)
+        print('Error creating account: $e');
+      }
     }
   }
 
@@ -178,7 +204,16 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: _submitForm,
-              child: const Text('Submit'),
+              child: const Text('Log in'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreateProfilePage()),
+                );
+              },
+              child: const Text('Create Profile'),
             ),
           ],
         ),
@@ -205,7 +240,6 @@ class KanbanBoard extends StatelessWidget {
               return [
                 PopupMenuItem(
                   child: Text('Profile'),
-                  // Add functionality or route navigation for the Settings option
                   onTap: () {
                     Navigator.push(
                       context,
@@ -215,7 +249,7 @@ class KanbanBoard extends StatelessWidget {
                 ),
                 PopupMenuItem(
                   child: Text('Logout'),
-                  // Go to the previous screen when Logout is selected
+                  // Go to the previous screen when Logout is selected for now
                   onTap: () {
                     Navigator.pop(context);
                   },
@@ -439,7 +473,6 @@ class TaskCard extends StatelessWidget {
           onPressed: () async {
             // Delete task from Firebase Firestore
             await FirebaseFirestore.instance.collection('tasks').doc(task.id).delete();
-
             // Call the onDelete callback to remove the task locally
             onDelete();
           },
