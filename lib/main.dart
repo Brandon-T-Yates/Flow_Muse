@@ -181,30 +181,80 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                ),
-                onSubmitted: (_) => _submitForm(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 15), // Adjust the left padding as needed
+                    child: Text(
+                      'Email',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.white,
+                    ),
+                    child: TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: (_) => _submitForm(),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                ),
-                obscureText: true,
-                onSubmitted: (_) => _submitForm(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 15), // Adjust the left padding as needed
+                    child: Text(
+                      'Password',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.white,
+                    ),
+                    child: TextField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                        border: InputBorder.none,
+                      ),
+                      obscureText: true,
+                      onSubmitted: (_) => _submitForm(),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 30,),
             ElevatedButton(
               onPressed: _submitForm,
-              child: const Text('Log in'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: stylePink,
+                foregroundColor: Colors.black,
+              ),
+              child: const Text('Log In'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -213,6 +263,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => CreateProfilePage()),
                 );
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: stylePink,
+                foregroundColor: Colors.black,
+              ),
               child: const Text('Create Profile'),
             ),
           ],
