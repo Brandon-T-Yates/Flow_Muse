@@ -376,7 +376,8 @@ class KanbanColumn extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Add Task'),
-          content: Column(
+          content: SingleChildScrollView(
+          child: Column(
             children: [
               TextField(
                 controller: titleController,
@@ -392,6 +393,7 @@ class KanbanColumn extends StatelessWidget {
               ),
             ],
           ),
+        ),
           actions: [
             TextButton(
               onPressed: () {
