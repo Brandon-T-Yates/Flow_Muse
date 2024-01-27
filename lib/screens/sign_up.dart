@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:test/main.dart';
 import 'package:test/kanbanboard.dart';
 
 class CreateProfilePage extends StatefulWidget {

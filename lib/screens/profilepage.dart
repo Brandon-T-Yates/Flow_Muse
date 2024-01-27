@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../constants/colors.dart';
+import 'package:test/main.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -29,7 +31,7 @@ class ProfilePage extends StatelessWidget {
               onPressed: () {
                 _showDeleteConfirmationDialog(context);
               },
-              style: ElevatedButton.styleFrom(primary: Colors.white),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
               child: const Text('Delete Account', style: TextStyle(fontSize: 16, color: Colors.red)),
             ),
           ],
@@ -54,14 +56,41 @@ class ProfilePage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                // Perform the delete action here
-                Navigator.of(context).pop(); // Close the dialog
+                _deleteAccount(context); // Call the _deleteAccount method here
               },
-              child: const Text('Yes'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+              child: const Text('Delete Account', style: TextStyle(fontSize: 16, color: Colors.red)),
             ),
           ],
         );
       },
     );
+  }
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    try {
+      // Delete the user account
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        await user.delete();
+      }
+
+      // Sign out after deleting the account
+      await FirebaseAuth.instance.signOut();
+
+      // Close the delete confirmation dialog
+      Navigator.pop(context);
+
+      // Navigate to the new login page and clear the navigation stack
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage(title: 'Flow Muse Sign In')),
+        (route) => false,
+      );
+    } catch (error) {
+      print(error.toString());
+      // Handle errors if needed
+    }
   }
 }

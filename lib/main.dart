@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../constants/colors.dart';
-import 'package:intl/intl.dart';
-import 'screens/profilepage.dart';
-import 'task_model.dart';
 import 'screens/sign_up.dart';
 import 'task_provider.dart';
-import 'task_card.dart';
 import 'kanbanboard.dart';
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
