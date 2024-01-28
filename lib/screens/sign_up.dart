@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test/kanbanboard.dart';
+import '../constants/colors.dart';
 
 class CreateProfilePage extends StatefulWidget {
   const CreateProfilePage({Key? key}) : super(key: key);
@@ -18,47 +19,145 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       backgroundColor: appBackBlue,
       appBar: AppBar(
-        title: const Text('Create Profile'),
+         backgroundColor: Colors.transparent,
       ),
-      body: Padding(
+      body: Center(
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Welcome!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            const Center(
+              child: Text(
+                'Welcome!',
+                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+              ),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+            const SizedBox(height: 50),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 15),
+                    child: Text(
+                      'Email',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.white,
+                    ),
+                    child: TextField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                        border: InputBorder.none,
+                      ),
+                      // Add any additional properties or callbacks you need for the TextField
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 15),
+                    child: Text(
+                      'Password',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.white,
+                    ),
+                    child: TextField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                        border: InputBorder.none,
+                      ),
+                      obscureText: true,
+                      // Add any additional properties or callbacks you need for the TextField
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _confirmPasswordController,
-              decoration: const InputDecoration(labelText: 'Confirm Password'),
-              obscureText: true,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(left: 15),
+                    child: Text(
+                      'Confirm Password',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.white,
+                    ),
+                    child: TextField(
+                      controller: _confirmPasswordController,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                        border: InputBorder.none,
+                      ),
+                      obscureText: true,
+                      // Add any additional properties or callbacks you need for the TextField
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                _submitForm(context);
-              },
-              child: const Text('Submit'),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  _submitForm(context);
+                },
+                style: ElevatedButton.styleFrom(
+                backgroundColor: stylePink,
+                foregroundColor: Colors.black,
+              ),
+                child: const Text('Submit'),
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Future<void> _submitForm(BuildContext context) async {
     final String email = _emailController.text;
