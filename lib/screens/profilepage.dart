@@ -51,13 +51,13 @@ class ProfilePage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: const Text('No'),
             ),
             ElevatedButton(
               onPressed: () {
-                _deleteAccount(context); // Call the _deleteAccount method here
+                _deleteAccount(context);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
               child: const Text('Delete Account', style: TextStyle(fontSize: 16, color: Colors.red)),
@@ -70,20 +70,16 @@ class ProfilePage extends StatelessWidget {
 
   Future<void> _deleteAccount(BuildContext context) async {
     try {
-      // Delete the user account
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
         await user.delete();
       }
 
-      // Sign out after deleting the account
       await FirebaseAuth.instance.signOut();
 
-      // Close the delete confirmation dialog
       Navigator.pop(context);
 
-      // Navigate to the new login page and clear the navigation stack
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => MyHomePage(title: 'Flow Muse Sign In')),
@@ -91,7 +87,6 @@ class ProfilePage extends StatelessWidget {
       );
     } catch (error) {
       print(error.toString());
-      // Handle errors if needed
     }
   }
 }
