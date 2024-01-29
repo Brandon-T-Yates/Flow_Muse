@@ -10,19 +10,17 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeTask(Task task) {
-    tasks.remove(task);
+  void deleteTask(String taskId) {
+    tasks.removeWhere((t) => t.id == taskId);
     notifyListeners();
   }
 
-  void reorderTasks(int oldIndex, int newIndex, String status) {
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
-    }
-    final task = tasks.removeAt(oldIndex);
-    tasks.insert(newIndex, task);
+  void updateTaskStatus(String taskId, String newStatus) {
+    Task task = tasks.firstWhere((t) => t.id == taskId);
+    task.status = newStatus;
     notifyListeners();
   }
+
   Future<void> fetchTasks() async {
     try {
       // Clear existing tasks

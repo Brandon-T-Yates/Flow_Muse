@@ -109,41 +109,27 @@ class KanbanColumn extends StatelessWidget {
               child: Text('+'),
             ),
         
-            // Draggable Column
+            // Click and Hold to Move Task
             Expanded(
-              child: DragTarget<Task>(
-                onWillAccept: (task) => task != null && task.status != status,
-                onAccept: (task) {
-                  taskProvider.tasks.remove(task);
-                  task.status = status;
-                  taskProvider.addTask(task);
-                  taskProvider.notifyListeners();
-                },
-                builder: (context, candidateData, rejectedData) {
-                  return ListView.builder(
-                    itemCount: taskProvider.tasks.length,
-                    itemBuilder: (context, index) {
-                      var task = taskProvider.tasks[index];
-                      if (task.status == status) {
-                        return LongPressDraggable<Task>(
-                          data: task,
-                          child: TaskCard(
-                            task: task,
-                            onDelete: () {
-                              taskProvider.tasks.removeAt(index);
-                              taskProvider.notifyListeners();
-                            },
-                          ),
-                          feedback: TaskCard(task: task, onDelete: () {}),
-                          onDragEnd: (details) {
-                            // Handle drag end if needed
-                          },
-                        );
-                      } else {
-                        return Container();
-                      }
-                    },
-                  );
+              child: ListView.builder(
+                itemCount: taskProvider.tasks.length,
+                itemBuilder: (context, index) {
+                  var task = taskProvider.tasks[index];
+                  if (task.status == status) {
+                    return GestureDetector(
+                      onLongPress: () {
+                        _showMoveTaskDialog(context, taskProvider, task);
+                      },
+                      child: TaskCard(
+                        task: task,
+                        onDelete: () {
+                          taskProvider.deleteTask(task.id);
+                        },
+                      ),
+                    );
+                  } else {
+                    return Container();
+                  }
                 },
               ),
             ),
@@ -186,7 +172,7 @@ class KanbanColumn extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
             onPressed: () async {
@@ -223,5 +209,47 @@ class KanbanColumn extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _showMoveTaskDialog(BuildContext context, TaskProvider taskProvider, Task task) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Move Task'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Select the catagory to move the task to:'),
+              ElevatedButton(
+                onPressed: () {
+                  _moveTaskToColumn(taskProvider, task, 'ToDo');
+                  Navigator.pop(context);
+                },
+                child: const Text('ToDo'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _moveTaskToColumn(taskProvider, task, 'Doing');
+                  Navigator.pop(context);
+                },
+                child: const Text('Doing'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _moveTaskToColumn(taskProvider, task, 'Done');
+                  Navigator.pop(context);
+                },
+                child: const Text('Done'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _moveTaskToColumn(TaskProvider taskProvider, Task task, String newStatus) {
+    taskProvider.updateTaskStatus(task.id, newStatus);
   }
 }
