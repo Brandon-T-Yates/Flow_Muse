@@ -9,16 +9,35 @@ import 'task_provider.dart';
 import 'task_card.dart';
 
 
-class KanbanBoard extends StatelessWidget {
-  const KanbanBoard({super.key});
+class KanbanBoard extends StatefulWidget {
+  const KanbanBoard({Key? key}) : super(key: key);
+
+  @override
+  _KanbanBoardState createState() => _KanbanBoardState();
+}
+
+class _KanbanBoardState extends State<KanbanBoard> {
+  late TextEditingController projectNameController;
+
+  @override
+  void initState() {
+    super.initState();
+    projectNameController = TextEditingController(text: 'Project');
+  }
 
   @override
   Widget build(BuildContext context) {
     Provider.of<TaskProvider>(context, listen: false).fetchTasks();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appBackBlue,
-        title: const Text('Project'),
+        title: GestureDetector(
+          onLongPress: () {
+            _showEditProjectDialog(context);
+          },
+          child: Text(projectNameController.text),
+        ),
         centerTitle: true,
         automaticallyImplyLeading: false,
         actions: [
@@ -36,7 +55,6 @@ class KanbanBoard extends StatelessWidget {
                 ),
                 PopupMenuItem(
                   child: Text('Logout'),
-                  // Go to the previous screen when Logout is selected for now
                   onTap: () {
                     Navigator.pop(context);
                   },
@@ -52,7 +70,40 @@ class KanbanBoard extends StatelessWidget {
       ),
     );
   }
+
+  void _showEditProjectDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Board Name'),
+          content: TextFormField(
+            controller: projectNameController,
+            decoration: InputDecoration(labelText: 'Board Name'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  // Save the edited project name
+                });
+                Navigator.pop(context);
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
+
 class KanbanColumns extends StatelessWidget {
   const KanbanColumns({super.key});
 
