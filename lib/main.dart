@@ -7,6 +7,8 @@ import '../constants/colors.dart';
 import 'screens/sign_up.dart';
 import 'task_provider.dart';
 import 'kanbanboard.dart';
+import 'dart:async';
+import 'splash_screen.dart';
 
 
 
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const MyHomePage(title: 'Flow Muse Sign In'),
+        home: const SplashScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );
@@ -105,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
           MaterialPageRoute(builder: (context) => KanbanBoard()),
         );
       } catch (e) {
-        // Handle account creation errors (e.g., email already exists)
+        // Handle account creation errors
         print('Error creating account: $e');
       }
     }
@@ -134,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 15), // Adjust the left padding as needed
+                    padding: EdgeInsets.only(left: 15),
                     child: Text(
                       'Email',
                       style: TextStyle(
@@ -168,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 15), // Adjust the left padding as needed
+                    padding: EdgeInsets.only(left: 15),
                     child: Text(
                       'Password',
                       style: TextStyle(
