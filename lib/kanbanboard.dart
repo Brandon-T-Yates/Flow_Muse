@@ -190,17 +190,17 @@ class KanbanColumn extends StatelessWidget {
     );
   }
 
-  void _showAddTaskDialog(BuildContext context, TaskProvider taskProvider, String status) {
-    TextEditingController titleController = TextEditingController();
-    TextEditingController descriptionController = TextEditingController();
-    TextEditingController dueDateController = TextEditingController();
+void _showAddTaskDialog(BuildContext context, TaskProvider taskProvider, String status) {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController dueDateController = TextEditingController();
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Add Task'),
-          content: SingleChildScrollView(
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Add Task'),
+        content: SingleChildScrollView(
           child: Column(
             children: [
               TextField(
@@ -218,20 +218,25 @@ class KanbanColumn extends StatelessWidget {
             ],
           ),
         ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
             onPressed: () async {
               if (titleController.text.isNotEmpty && dueDateController.text.isNotEmpty) {
-                // Convert due date string to DateTime
+                if (!_isValidDateFormat(dueDateController.text)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Must be mm/dd/yy format')),
+                  );
+                  return;
+                }
+
                 DateTime dueDate = DateFormat('MM/dd/yy').parse(dueDateController.text);
 
-                // Create a Task object
                 Task newTask = Task(
                   id: DateTime.now().millisecondsSinceEpoch.toString(),
                   title: titleController.text,
@@ -240,27 +245,36 @@ class KanbanColumn extends StatelessWidget {
                   status: status,
                 );
 
-                // Store the task in Firebase Firestore
                 DocumentReference docRef = await FirebaseFirestore.instance.collection('tasks').add({
-                    'title': newTask.title,
-                    'description': newTask.description,
-                    'dueDate': newTask.dueDate,
-                    'status': newTask.status,
-                  },
-                );
-                 // Updates the task's ID
+                  'title': newTask.title,
+                  'description': newTask.description,
+                  'dueDate': newTask.dueDate,
+                  'status': newTask.status,
+                });
+
+                // Updates the task's ID
                 newTask.id = docRef.id;
                 taskProvider.addTask(newTask);
                 Navigator.pop(context);
               }
             },
-              child: Text('Add'),
-            ),
-          ],
-        );
-      },
-    );
+            child: Text('Add'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+bool _isValidDateFormat(String date) {
+  try {
+    DateFormat('MM/dd/yy').parse(date);
+    return true;
+  } catch (e) {
+    return false;
   }
+}
+
 
   void _showMoveTaskDialog(BuildContext context, TaskProvider taskProvider, Task task) {
     showDialog(
