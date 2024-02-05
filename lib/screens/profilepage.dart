@@ -1,10 +1,20 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 import '../constants/colors.dart';
 import 'package:test/main.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  File? _image;
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +29,17 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircleAvatar(
-              radius: 100,
+            InkWell(
+              onTap: () {
+                _showImageDialog(context);
+              },
+              child: CircleAvatar(
+                radius: 100,
+                backgroundImage: _image != null ? FileImage(_image!) : null,
+                child: _image == null
+                    ? const Icon(Icons.camera_alt, size: 40)
+                    : null,
+              ),
             ),
             const SizedBox(height: 20),
             const Text(
@@ -89,4 +108,16 @@ class ProfilePage extends StatelessWidget {
       print(error.toString());
     }
   }
+
+  Future<void> _showImageDialog(BuildContext context) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
 }
+
